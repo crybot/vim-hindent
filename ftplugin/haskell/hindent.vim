@@ -14,7 +14,7 @@ function! hindent#HindentToggle()
 endfunction
 
 
-function! hindent#Hindent()
+function! hindent#Hindent() range
     let l:winview = winsaveview()
 
     if !executable("hindent")
@@ -28,8 +28,8 @@ function! hindent#Hindent()
     silent! w !hindent > /dev/null 2>&1
 
     if v:shell_error
-        echohl WarningMsg
-        echo "Hindent: Parsing error\n"
+        " echohl WarningMsg
+        " echo "Hindent: Parsing error\n"
         echohl None
     else
         let l:indent_opt = ""
@@ -42,8 +42,14 @@ function! hindent#Hindent()
           let l:line_length_opt = " --line-length " . g:hindent_line_length
         endif
 
+        let l:range = a:firstline . ',' . a:lastline
+        if (a:lastline - a:firstline) == 0
+          let l:range = "0,$"
+        endif
+
         silent! exe "undojoin"
-        silent! exe "keepjumps %!hindent" . l:indent_opt . l:line_length_opt
+        silent! keepjumps exe l:range . "!hindent" . 
+              \ l:indent_opt . l:line_length_opt
     endif
 
     call winrestview(l:winview)
