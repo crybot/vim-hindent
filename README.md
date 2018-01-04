@@ -1,4 +1,7 @@
-# vim-hindent
+# (MODIFIED) vim-hindent
+
+This is just a modified version of the vim-hindent plugin that supports range
+selection.
 
 Integrates with [hindent](https://github.com/chrisdone/hindent) so every time
 you save a Haskell source file it gets automatically prettified.
@@ -43,4 +46,28 @@ Max line length (default = `''`, uses `hindent` default of 80):
 
 ```vim
 g:hindent_line_length = 100
+```
+
+## My personal configuration
+I personally prefer to disable formatting on save, therefore 
+
+```vim
+g:hindent_on_save = 0
+```
+
+Then I integrated some useful filetype specific mappings:
+
+The first one uses [vim-textobj-haskell](https://github.com/gilligan/vim-textobj-haskell)
+to select the top level binding on which the cursor currently is, and then calls
+Hindent to format just that code fraction (the selection gives an helpful visually
+clue of whats going on)
+```vim
+autocmd FileType haskell map == vih:call hindent#Hindent()<CR>
+```
+
+The second one is similar, but it does not use text objects. Instead it formats
+the whole file by not passing any range to the function. The empty range is treated
+as a whole-file selection by the plugin
+```vim
+autocmd FileType haskell map =G :call hindent#Hindent()<CR>
 ```
